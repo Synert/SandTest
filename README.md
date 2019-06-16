@@ -1,7 +1,9 @@
 # SandTest
-A sand 'physics' demo in Unity, initially put together in an afternoon. Might expand on it?
+A sand 'physics' demo in Unity, initially put together in an afternoon.
 
 <img src = "http://www.synert.co.uk/images/code/sand.png"/>
+
+<a href = "https://www.youtube.com/watch?v=lxoE0yVbmjI">Demo video</a>
 
 #### WHAT IT DO?
 tl;dr *it's all a big hack where i just smooth the normals*
@@ -14,7 +16,18 @@ Check out the default scene for how to set it up properly on an object, all the 
 Sure, feel free to expand on this or add things. It has a disabled collider right now which can be updated with the rendered mesh, no idea how it'd work out in any kind of game though. 
 
 There's a few things that I'm planning to add later down the line:
-- volume is not currently preserved properly... still wouldn't be, but I can get it to look closer
+- try to keep the volume more consistent
 - better support for objects, there's a spot in the middle that acts as a blocker to test the concept
 - tools to add/remove sand
 - make objects displace sand based on mass and speed
+- wind
+
+#### KNOWN BUGS
+- bigger grid sizes start to break, the largest I've had working is 200x200. Not sure what the actual upper limit is, or why it breaks yet.
+- using bigger max transfer rates with a smaller max difference will cause a lot of weird issues- you can see this starting to occur at the end of the demo video.
+- volume is not currently preserved properly
+- the UVs don't move or scale, haven't figured that one out yet
+- the min/max settings are not affected by the scale, causing it to look strange
+
+#### ASSETS USED
+Sand texture/normal was sourced from <a href = "http://www.texturise.club/2013/09/seamless-beach-sand-texture-bump-map.html">Texturise</a>, made by Seme Design Lab

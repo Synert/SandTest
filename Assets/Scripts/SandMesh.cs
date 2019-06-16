@@ -19,31 +19,26 @@ public class SandMesh : MonoBehaviour
     [SerializeField] private Vector3 m_vOrigin = Vector3.zero;
 
     // x * x size... higher res will look more detailed, might not run so well
-    [SerializeField] private int m_iMeshW = 30;
-    [SerializeField] private int m_iMeshH = 30;
+    [SerializeField] private int m_iMeshW = 200;
+    [SerializeField] private int m_iMeshH = 200;
 
     // max transfer rate, used to control flow
-    [SerializeField] private float m_fMaxTransfer = 6.0f;
+    [SerializeField] private float m_fMaxTransfer = 2.0f;
 
     // min difference to start flow
-    [SerializeField] private float m_fMinDif = 1.0f;
+    [SerializeField] private float m_fMinDif = 0.5f;
 
     // max difference, used to work out multiplier for transfer rate
-    [SerializeField] private float m_fMaxDif = 10.0f;
+    [SerializeField] private float m_fMaxDif = 5.0f;
 
     // chunking for flow update, more framerate but looks worse
-    [SerializeField] private int m_iChunkRate = 15;
+    [SerializeField] private int m_iChunkRate = 100;
     private int m_iCurChunk = 0;
-
-    // particles
-    [SerializeField] private Transform m_pParticle;
-    [SerializeField] private int m_iParticleRate = 2;
-    private int m_iParticleSpawnCount = 0;
 
     // Start is called before the first frame update
     void Start()
     {
-        // set up the mesh
+        // set everything up
         m_pMesh = gameObject.AddComponent<MeshFilter>().mesh;
         m_pMesh = new Mesh();
 
@@ -54,42 +49,26 @@ public class SandMesh : MonoBehaviour
 
         int iNumTris = 0;
 
-        // totally random heights for now, make it look like sand later
+        // set up the mesh, simple starting pattern for demo
+        // TODO set up a way to load in different starting heights
         for (int x = 0; x < m_iMeshW; x++)
         {
             for(int y = 0; y < m_iMeshH; y++)
             {
                 float fHeight = 0.0f;
-                //fHeight = Random.Range(0.06f * y * x - 1.0f, 0.06f * y * x);
-                //fHeight = Random.Range(-5.0f, 10.0f * x);
-
-                //if (x == (m_iMeshW / 2) && y == (m_iMeshH / 2))
-                //    fHeight = 20.0f;
-                //
-                //if ((x + y) % m_iMeshW == 4)
-                //    fHeight += 5.0f;
-                //
-                //if ((x * y) % m_iMeshH == 8)
-                //    fHeight += 7.5f;
 
                 if (x == 0 || y == 0 || x == m_iMeshW - 1 || y == m_iMeshH - 1)
                     fHeight = Random.Range(500.0f, 2000.0f);
-                //
+
                 if (x == (m_iMeshW / 2) || y == (m_iMeshH / 2))
                     fHeight += 200.0f;
-
-                //if (x == (m_iMeshW / 2) && y == (m_iMeshH / 2))
-                //    fHeight += 50.0f;
-
-                //fHeight += Mathf.Abs(x - (m_iMeshW / 2)) * -3.0f;
-                //fHeight += Mathf.Abs(y - (m_iMeshH / 2)) * -3.0f;
 
                 fHeight += Random.Range(0.0f, 4.0f);
 
                 m_vVerts[(x + y * m_iMeshW)] = new Vector3(x * m_fScale, fHeight, y * m_fScale) + m_vOrigin;
 
-                m_vUVs[(x + y * m_iMeshW)].x = x % 2;//((float)x / (float)m_iMeshW) * m_fScale;
-                m_vUVs[(x + y * m_iMeshW)].y = y % 2;//((float)y / (float)m_iMeshH) * m_fScale;
+                m_vUVs[(x + y * m_iMeshW)].x = x % 2; //((float)x / (float)m_iMeshW) * m_fScale;
+                m_vUVs[(x + y * m_iMeshW)].y = y % 2; //((float)y / (float)m_iMeshH) * m_fScale;
 
                 // tris (y != h, n % w != 0)
                 // n, n + w, n + 1
@@ -174,6 +153,7 @@ public class SandMesh : MonoBehaviour
                         && (y + iAddY >= 0 && y + iAddY < m_iMeshH);
 
                     // make sure the neighbour isn't an object
+                    // TODO expand on this
                     bInbounds &= !((x + iAddX) == (m_iMeshW / 2) && (y + iAddY) == (m_iMeshH / 2));
 
                     if (bInbounds)
@@ -209,19 +189,6 @@ public class SandMesh : MonoBehaviour
                             int iVert = (x + iAddX) + (y + iAddY) * m_iMeshW;
 
                             m_vVerts[iVert].y += ((fTransfer[i] * m_fMaxTransfer) / iTransferTotal) * 1.0f;// Time.deltaTime;
-
-                            float fSpeed = 0.0f;// fTransfer[i] * m_fMaxTransfer * 20.0f * m_fScale;
-
-                            if (m_iParticleSpawnCount == 0 && fSpeed > 1.0f * m_fScale)
-                            {
-                                Transform pNew = Instantiate(m_pParticle, vVert, Quaternion.identity);
-                                pNew.LookAt(m_vVerts[iVert]);
-                                //pNew.position = m_vVerts[iVert];
-
-                                pNew.GetComponent<ParticleSystem>().startSpeed = fSpeed;
-                                pNew.GetComponent<ParticleSystem>().startSize = m_fScale * 0.1f;
-                                pNew.GetComponent<ParticleSystem>().startLifetime = m_fScale;
-                            }
                         }
                     }
                 }
@@ -232,9 +199,5 @@ public class SandMesh : MonoBehaviour
 
         if (m_iCurChunk >= m_iMeshW)
             m_iCurChunk = 0;
-
-        m_iParticleSpawnCount++;
-        if (m_iParticleSpawnCount >= m_iParticleRate)
-            m_iParticleSpawnCount = 0;
     }
 }
