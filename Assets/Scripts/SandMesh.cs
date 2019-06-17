@@ -57,11 +57,17 @@ public class SandMesh : MonoBehaviour
             {
                 float fHeight = 0.0f;
 
+                // edges
                 if (x == 0 || y == 0 || x == m_iMeshW - 1 || y == m_iMeshH - 1)
-                    fHeight = Random.Range(500.0f, 2000.0f);
+                    fHeight = Random.Range(50.0f, 200.0f);
 
+                // plus in the middle
                 if (x == (m_iMeshW / 2) || y == (m_iMeshH / 2))
-                    fHeight += 200.0f;
+                    fHeight += Random.Range(30.0f, 60.0f);
+
+                // create a temporary 'object'
+                if (x == (m_iMeshW / 2) && y == (m_iMeshH / 2))
+                    fHeight = 500.0f;
 
                 fHeight += Random.Range(0.0f, 4.0f);
 
@@ -141,9 +147,13 @@ public class SandMesh : MonoBehaviour
                 float[] fTransfer = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
                 int iTransferTotal = 0;
 
-                // up to 9 neighbours, depending on where this point is
+                // up to 8 neighbours, depending on where this point is
                 for (int i = 0; i < 9; i++)
                 {
+                    // don't check itself
+                    if (i == 4)
+                        continue;
+
                     int iAddX = (i % 3) - 1;
                     int iAddY = (int)Mathf.Floor(i / 3.0f) - 1;
                     int iVert = (x + iAddX) + (y + iAddY) * m_iMeshW;
@@ -177,7 +187,8 @@ public class SandMesh : MonoBehaviour
                 // now we transfer
                 if (iTransferTotal > 0)
                 {
-                    m_vVerts[x + y * m_iMeshW].y -= ((fTotalTransfer * m_fMaxTransfer) / iTransferTotal) * 1.0f;// Time.deltaTime;
+                    // updated to PI / 4 to roughly estimate the volume of a 45 degree chunk
+                    m_vVerts[x + y * m_iMeshW].y -= ((fTotalTransfer * m_fMaxTransfer) / iTransferTotal) * (Mathf.PI / 4); // Time.deltaTime;
 
                     for (int i = 0; i < 9; i++)
                     {
@@ -188,7 +199,7 @@ public class SandMesh : MonoBehaviour
                             int iAddY = (int)Mathf.Floor(i / 3.0f) - 1;
                             int iVert = (x + iAddX) + (y + iAddY) * m_iMeshW;
 
-                            m_vVerts[iVert].y += ((fTransfer[i] * m_fMaxTransfer) / iTransferTotal) * 1.0f;// Time.deltaTime;
+                            m_vVerts[iVert].y += ((fTransfer[i] * m_fMaxTransfer) / iTransferTotal) * 1.0f; // Time.deltaTime;
                         }
                     }
                 }

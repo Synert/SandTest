@@ -299,9 +299,9 @@ MonoBehaviour:
   m_iMeshW: 250
   m_iMeshH: 250
   m_fMaxTransfer: 2
-  m_fMinDif: 0.5
-  m_fMaxDif: 5
-  m_iChunkRate: 100
+  m_fMinDif: 0.25
+  m_fMaxDif: 10
+  m_iChunkRate: 125
 --- !u!64 &1736868607
 MeshCollider:
   m_ObjectHideFlags: 0
